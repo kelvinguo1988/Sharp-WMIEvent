@@ -21,7 +21,7 @@ PS C:\Users\Administrator> Sharp-WMIEvent -ConsumerType Command -ComputerName 10
 [+] Creating The WMI Event Filter
 [+] Creating The WMI Event Consumer
 [+] Creating The WMI Event Filter And Event Consumer Binding
-[+] [+] Triggering The Target Process
+[+] Triggering The Target Process
 [+] Cleaning Up The Event Subscriptions
 ```
 
@@ -34,7 +34,7 @@ PS C:\Users\Administrator>Sharp-WMIEvent -ConsumerType JScript -ComputerName 10.
 [+] Creating The WMI Event Filter
 [+] Creating The WMI Event Consumer
 [+] Creating The WMI Event Filter And Event Consumer Binding
-[+] [+] Triggering The Target Process
+[+] Triggering The Target Process
 [+] Cleaning Up The Event Subscriptions
 ```
 
