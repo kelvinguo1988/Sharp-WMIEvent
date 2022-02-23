@@ -193,12 +193,12 @@ function FormatStatus([string]$Flag, [string]$Message) {
         $SecurePassword = $Password | ConvertTo-SecureString -AsPlainText -Force
         $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $SecurePassword
 
-        $GlobalArgs["Credential"] = CreatePSCredential $Username $Password
+        $GlobalArgs["Credential"] = $Credential
         $GlobalArgs["ComputerName"] = $ComputerName
     }
 
 #------------------------------------------[Create Event Filter]---------------------------------------
-    
+
     Switch ($Trigger)
     {
         'ProcessStart'
@@ -210,23 +210,26 @@ function FormatStatus([string]$Flag, [string]$Message) {
         {
             $FilterQuery = "SELECT * FROM __InstanceModificationEvent WITHIN 60 WHERE TargetInstance ISA 'Win32_PerfFormattedData_PerfOS_System' AND TargetInstance.SystemUpTime >= 240 AND TargetInstance.SystemUpTime < 325"
         }
-    
+
         'UserLogon'
         {
             $FilterQuery = "SELECT * FROM __InstanceCreationEvent WITHIN 10 WHERE TargetInstance ISA 'Win32_LoggedOnUser'"
         }
-        
+
         'Interval'
         {
-            $TimerId = 'Time Synchronizer'
-            $TimerIdToRemove = Get-WmiObject -Class __IntervalTimerInstruction -Filter "TimerId='$TimerId'"
-            if($TimerIdToRemove) { $TimerIdToRemove | Remove-WmiObject}
-            Set-WmiInstance -class '__IntervalTimerInstruction' -Arguments @{ 
-                IntervalBetweenEvents = ($IntervalPeriod * 1000); TimerId = '$TimerId' 
+            $TimerId = -join((48..57 + 65..90 + 97..122) | get-random -count 6 | %{[char]$_})
+            #$TimerIdToRemove = Get-WmiObject -Class __IntervalTimerInstruction -Filter "TimerId='$TimerId'" @GlobalArgs
+            #if($TimerIdToRemove) { $TimerIdToRemove | Remove-WmiObject}
+
+            $IntervalArgs = @{
+                IntervalBetweenEvents = ($IntervalPeriod * 1000); TimerId = $TimerId
             }
+
+            Set-WmiInstance -class '__IntervalTimerInstruction' -Arguments $IntervalArgs @GlobalArgs
             $FilterQuery = "Select * from __TimerEvent where TimerId = '$TimerId'"
         }
-        
+
         'Timed'
         {
             $FilterQuery = "SELECT * FROM __InstanceModificationEvent WITHIN 60 WHERE TargetInstance ISA 'Win32_LocalTime' AND TargetInstance.Hour = $($ExecutionTime.Hour.ToString()) AND TargetInstance.Minute = $($ExecutionTime.Minute.ToString()) GROUP WITHIN 60"
@@ -282,9 +285,9 @@ function FormatStatus([string]$Flag, [string]$Message) {
 
         FormatStatus 1 "Creating The WMI Event Consumer $ConsumerName"
         If($GlobalArgs.Count -eq 0) {
-            $EventConsumer =  Set-WmiInstance -Namespace root\subscription -Class CommandLineEventConsumer -Arguments $CommandLineEventConsumerArgs
+            $EventConsumer = Set-WmiInstance -Namespace root\subscription -Class CommandLineEventConsumer -Arguments $CommandLineEventConsumerArgs
         }else {
-            $EventConsumer =  Set-WmiInstance -Namespace root\subscription -Class CommandLineEventConsumer -Arguments $CommandLineEventConsumerArgs @GlobalArgs
+            $EventConsumer = Set-WmiInstance -Namespace root\subscription -Class CommandLineEventConsumer -Arguments $CommandLineEventConsumerArgs @GlobalArgs
         }
     }
 
