@@ -17,8 +17,7 @@ Function Sharp-WMIEvent {
 .LINK
 
     https://www.mdsec.co.uk/2020/09/i-like-to-move-it-windows-lateral-movement-part-1-wmi-event-subscription/
-    https://github.com/lengjibo/RedTeamTools/blob/master/windows/WMIShell
-
+    
 .PARAMETER ComputerName
 
     Specifies the target computer system to add a permanent WMI event to. The default is the local computer.

